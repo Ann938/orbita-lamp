@@ -94,58 +94,6 @@ function PowerButton() {
   );
 }
 
-// Слово «Орбита» в подвале — окно в космос. Курсор (или палец) работает как фонарик:
-// в этом месте буквы освещаются цветом светильника, звёзды вспыхивают, слово чуть наклоняется.
-function FooterWord() {
-  const ref = useRef<HTMLParagraphElement>(null);
-  useEffect(() => {
-    const el = ref.current!;
-    let raf = 0;
-    const set = (x: number, y: number) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const r = el.getBoundingClientRect();
-        const px = (x - r.left) / r.width;
-        const py = (y - r.top) / r.height;
-        el.style.setProperty("--mx", `${(px * 100).toFixed(1)}%`);
-        el.style.setProperty("--my", `${(py * 100).toFixed(1)}%`);
-        el.style.setProperty("--rx", `${((0.5 - py) * 10).toFixed(2)}deg`);
-        el.style.setProperty("--ry", `${((px - 0.5) * 14).toFixed(2)}deg`);
-        el.dataset.lit = "";
-      });
-    };
-    const off = () => {
-      cancelAnimationFrame(raf);
-      delete el.dataset.lit;
-      el.style.setProperty("--rx", "0deg");
-      el.style.setProperty("--ry", "0deg");
-    };
-    const onMove = (e: PointerEvent) => set(e.clientX, e.clientY);
-    const onTouch = (e: TouchEvent) => set(e.touches[0].clientX, e.touches[0].clientY);
-    const box = el.parentElement!;
-    box.addEventListener("pointermove", onMove);
-    box.addEventListener("pointerleave", off);
-    box.addEventListener("touchstart", onTouch, { passive: true });
-    box.addEventListener("touchmove", onTouch, { passive: true });
-    box.addEventListener("touchend", off);
-    return () => {
-      cancelAnimationFrame(raf);
-      box.removeEventListener("pointermove", onMove);
-      box.removeEventListener("pointerleave", off);
-      box.removeEventListener("touchstart", onTouch);
-      box.removeEventListener("touchmove", onTouch);
-      box.removeEventListener("touchend", off);
-    };
-  }, []);
-  return (
-    <div className={s.footStage}>
-      <p ref={ref} className={s.footWord} data-text="Орбита" aria-hidden="true">
-        Орбита
-      </p>
-    </div>
-  );
-}
-
 function Header() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -517,7 +465,6 @@ export default function Landing() {
       </main>
 
       <footer className={s.footer}>
-        <FooterWord />
         <div className={s.footRow}>
           <span>{footer.copy}</span>
           <nav>

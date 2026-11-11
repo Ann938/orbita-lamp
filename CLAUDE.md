@@ -16,4 +16,4 @@
 - Проверка: `npm run dev -- -p 3300`; `node scripts/shot.mjs http://localhost:3300/ <out> 1440 900 dark 800`,
   МВ: `ENGINE=webkit MOBILE=1 node scripts/shot.mjs http://localhost:3300/ <out> 390 844 dark 700`.
 - Публикация (только с согласия): коммит → `git push` → `npm run deploy` → https://ann938.github.io/orbita-lamp/ (репо Ann938/orbita-lamp, noindex).
-- Подвал: слово «Орбита» — звёзды в буквах, курсор/палец как фонарик (`FooterWord`). В шапке — кнопка питания (`PowerButton`).
+- В шапке — кнопка питания (`PowerButton`).
