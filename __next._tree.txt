@@ -1,0 +1,10 @@
+:HL["/orbita-lamp/_next/static/chunks/11oxwnidgh0eg.css","style"]
+:HL["/orbita-lamp/_next/static/media/01d6212a423b17a1-s.p.1pvupmngxrt5z.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/media/276a8f4fe816cb6b-s.p.2v2sz4qlut9s1.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/media/6f3ab718e3727c1a-s.p.3huc2loe0ie8a.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/media/82450a180bcad83c-s.p.0p-wng2nn8o-p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/media/932d3869cac5e2f5-s.p.2cu8l7zf4s4ec.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/media/fdbf446d127afa2d-s.p.1xjn85gt7t6qs.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/chunks/2dpvwg7ihhpkv.css","style"]
+1:[["children",{"s":"__PAGE__","h":160}]]
+0:{"b":"ieXkL1GSCiFeboyb4G62i","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

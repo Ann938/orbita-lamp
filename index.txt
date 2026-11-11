@@ -1,0 +1,30 @@
+1:"$Sreact.fragment"
+2:"/orbita-lamp/_next/static/chunks/3qfy96eoyh-ek.js"
+3:I[39756,["$2"],"default"]
+4:I[37457,["$2"],"default"]
+6:"/orbita-lamp/_next/static/chunks/1ap3q9eae8xev.js"
+7:"/orbita-lamp/_next/static/chunks/0kx_q4sksyatn.js"
+8:I[49080,["$2","$6","$7"],"default"]
+9:I[28264,["$2","$6","$7"],"default"]
+a:I[6222,["$2","$6","$7"],"default"]
+b:I[97367,["$2"],"OutletBoundary"]
+c:"$Sreact.suspense"
+e:"ViewportBoundary"
+f:I[97367,["$2"],"$e"]
+11:"MetadataBoundary"
+12:I[97367,["$2"],"$11"]
+14:I[68027,["$2"],"default",1]
+:HL["/orbita-lamp/_next/static/chunks/11oxwnidgh0eg.css","style"]
+:HL["/orbita-lamp/_next/static/media/01d6212a423b17a1-s.p.1pvupmngxrt5z.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/media/276a8f4fe816cb6b-s.p.2v2sz4qlut9s1.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/media/6f3ab718e3727c1a-s.p.3huc2loe0ie8a.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/media/82450a180bcad83c-s.p.0p-wng2nn8o-p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/media/932d3869cac5e2f5-s.p.2cu8l7zf4s4ec.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/media/fdbf446d127afa2d-s.p.1xjn85gt7t6qs.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/orbita-lamp/_next/static/chunks/2dpvwg7ihhpkv.css","style"]
+5:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$1","c",{"children":[[["$","$L8",null,{}],["$","$L9",null,{}],["$","$La",null,{}]],[["$","link","0",{"rel":"stylesheet","href":"/orbita-lamp/_next/static/chunks/2dpvwg7ihhpkv.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/orbita-lamp/_next/static/chunks/1ap3q9eae8xev.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/orbita-lamp/_next/static/chunks/0kx_q4sksyatn.js","async":true,"nonce":"$undefined"}]],["$","$Lb",null,{"children":["$","$c",null,{"name":"Next.MetadataOutlet","children":"$@d"}]}]]}],"p":false,"v":null}}]]
+0:{"P":null,"c":["",""],"q":"","i":false,"t":{"t":{"s":"","h":528,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/orbita-lamp/_next/static/chunks/11oxwnidgh0eg.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/orbita-lamp/_next/static/chunks/3qfy96eoyh-ek.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"ru","className":"h5pW1a_variable _4nzAZW_variable","children":["$","body",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}],"p":false,"v":null},"c":"$Q5"},"h":{"r":["$","$1","h",{"children":[null,["$","$Lf",null,{"children":"$L10"}],["$","$L12",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$c",null,{"name":"Next.Metadata","children":"$L13"}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":false,"v":null}},"m":"$undefined","G":["$14",[["$","link","0",{"rel":"stylesheet","href":"/orbita-lamp/_next/static/chunks/11oxwnidgh0eg.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"ieXkL1GSCiFeboyb4G62i"}
+10:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#07060b"}]]
+15:I[27201,["$2"],"IconMark"]
+d:null
+13:[["$","title","0",{"children":"Орбита — светильник, внутри которого космос"}],["$","meta","1",{"name":"description","content":"Дизайнерский светильник с ядром из выдувного стекла и латунным кольцом-орбитой. 16 миллионов оттенков, пять режимов света, управление касанием. Предзаказ первой партии."}],["$","meta","2",{"name":"robots","content":"noindex, nofollow"}],["$","meta","3",{"property":"og:title","content":"Орбита — светильник, внутри которого космос"}],["$","meta","4",{"property":"og:description","content":"Дизайнерский светильник с ядром из выдувного стекла и латунным кольцом-орбитой. 16 миллионов оттенков, пять режимов света, управление касанием. Предзаказ первой партии."}],["$","meta","5",{"property":"og:locale","content":"ru_RU"}],["$","meta","6",{"property":"og:type","content":"website"}],["$","meta","7",{"name":"twitter:card","content":"summary"}],["$","meta","8",{"name":"twitter:title","content":"Орбита — светильник, внутри которого космос"}],["$","meta","9",{"name":"twitter:description","content":"Дизайнерский светильник с ядром из выдувного стекла и латунным кольцом-орбитой. 16 миллионов оттенков, пять режимов света, управление касанием. Предзаказ первой партии."}],["$","link","10",{"rel":"icon","href":"/orbita-lamp/favicon.svg"}],["$","$L15","11",{}]]
