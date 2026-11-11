@@ -1,0 +1,11 @@
+// Холст светильника — под всем содержимым страницы.
+// Пока WebGL не запустился (или недоступен), вместо сцены — тёплое свечение на CSS.
+.canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100lvh;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(40% 45% at 50% 52%, rgba(255, 150, 70, 0.22), transparent 70%), var(--bg);
+}

@@ -1,0 +1,122 @@
+@use "core" as *;
+
+// ---- Масштаб ----
+// ДВ: числа из макета 1440, потолок — 1920. МВ: колонка 358 = экран − 32.
+:root {
+  --u: min(calc(100vw / 1440), 1.3333px);
+  @include mobile {
+    --u: min(calc((100vw - 32px) / 358), 1.8px);
+  }
+
+  // ---- Палитра ----
+  // «Чёрный» — глубокий космический графит, не #000.
+  --bg: #07060b;
+  --ink: #120d0a; // текст на светлой кнопке
+  --text-1: #f6f1ea; // тёплый белый, как бумага в свете лампы
+  --text-2: #d2ccc6; // один серый на весь проект — светлый, читается на свечении
+  --text-3: #a39d9f;
+  --line: rgba(246, 241, 234, 0.1);
+  --line-2: rgba(246, 241, 234, 0.22);
+  // цвет света — меняет сцена светильника при прокрутке (Lamp.tsx)
+  --tone: #ffa04d;
+  --tone-glow: rgba(255, 160, 77, 0.35);
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background: var(--bg);
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+body {
+  min-height: 100svh;
+  background: var(--bg);
+  color: var(--text-1);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+img,
+svg {
+  display: block;
+  max-width: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+::selection {
+  background: var(--tone);
+  color: var(--ink);
+}
+
+// Появление блоков: видно и без JS; скрываем, только когда скрипт готов
+html.motion-ready [data-reveal]:not([data-revealed]) {
+  opacity: 0;
+  transform: translateY(calc(32 * var(--u)));
+}
+[data-reveal] {
+  transition:
+    opacity 0.9s var(--ease),
+    transform 1s var(--ease);
+  transition-delay: calc(var(--d, 0) * 80ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  html.motion-ready [data-reveal]:not([data-revealed]) {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// над светильником — «рука», при перетаскивании — «сжатая рука», текст не выделяется
+html[data-grab],
+html[data-grab] body * {
+  cursor: grab;
+}
+html[data-grab="held"],
+html[data-grab="held"] body * {
+  cursor: grabbing;
+  user-select: none;
+}

@@ -1,0 +1,122 @@
+// Ядро стилей «Орбиты»: масштаб, сетка, шкала текста, миксины.
+// Подключается в модулях: @use "styles/core" as *;
+
+// Макет ДВ — 1440, контент 1280 (поля 80). МВ — колонка 358 = экран − 2×16.
+@function u($n) {
+  @return calc(#{$n} * var(--u));
+}
+
+$content: 1280;
+$m-content: 358;
+
+@mixin mobile { @media (max-width: 1023px) { @content; } }
+@mixin desktop { @media (min-width: 1024px) { @content; } }
+
+@mixin container {
+  width: u($content);
+  margin-inline: auto;
+  @include mobile { width: u($m-content); }
+}
+
+// ---- Шкала текста ----
+// Заголовки — антиква Cormorant (ощущение предмета интерьера), интерфейс — Manrope.
+// Чем крупнее кегль, тем плотнее трекинг и интерлиньяж.
+@mixin display {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 500;
+}
+@mixin type-h1 {
+  @include display;
+  font-size: u(132);
+  line-height: 0.9;
+  letter-spacing: u(-4);
+  @include mobile { font-size: u(64); letter-spacing: u(-1.8); line-height: 0.92; }
+}
+@mixin type-h2 {
+  @include display;
+  font-size: u(76);
+  line-height: 0.96;
+  letter-spacing: u(-2);
+  @include mobile { font-size: u(42); letter-spacing: u(-1); line-height: 1; }
+}
+@mixin type-h3 {
+  @include display;
+  font-size: u(34);
+  line-height: 1.05;
+  letter-spacing: u(-0.6);
+  @include mobile { font-size: u(28); }
+}
+@mixin type-lead {
+  font-size: u(19);
+  line-height: 1.55;
+  color: var(--text-2);
+  @include mobile { font-size: u(16); }
+}
+@mixin type-body {
+  font-size: u(15);
+  line-height: 1.6;
+  color: var(--text-2);
+  @include mobile { font-size: u(14); }
+}
+@mixin type-label {
+  font-weight: 600;
+  font-size: u(12);
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--tone);
+  @include mobile { font-size: u(11); }
+}
+
+// ---- Кнопки ----
+// Главное действие окрашено в текущий цвет света светильника.
+@mixin btn($h: 56) {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: u(10);
+  height: u($h);
+  padding-inline: u(28);
+  border-radius: u(100);
+  background: var(--tone);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: u(15);
+  white-space: nowrap;
+  box-shadow: 0 0 u(40) var(--tone-glow);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  @media (hover: hover) {
+    &:hover { transform: translateY(u(-2)); box-shadow: 0 0 u(70) var(--tone-glow); }
+  }
+  &:active { transform: scale(0.97); }
+  &:focus-visible { outline: u(2) solid var(--text-1); outline-offset: u(4); }
+}
+@mixin btn-ghost($h: 56) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: u(10);
+  height: u($h);
+  padding-inline: u(26);
+  border-radius: u(100);
+  border: u(1) solid var(--line-2);
+  color: var(--text-1);
+  font-weight: 500;
+  font-size: u(15);
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+  transition: border-color 0.3s, background-color 0.3s;
+  @media (hover: hover) {
+    &:hover { border-color: var(--tone); background: rgba(255, 255, 255, 0.04); }
+  }
+  &:focus-visible { outline: u(2) solid var(--tone); outline-offset: u(4); }
+}
+
+// Тонкая стеклянная панель
+@mixin glass($r: 28) {
+  border-radius: u($r);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015));
+  border: u(1) solid var(--line);
+  backdrop-filter: blur(20px);
+}

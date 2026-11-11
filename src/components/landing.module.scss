@@ -1,0 +1,1356 @@
+@use "styles/core" as *;
+
+// Секции прозрачные: под ними — холст светильника.
+// Боковые поля у всех секций одинаковые (контейнер 1280 / МВ 358).
+
+.page {
+  position: relative;
+  z-index: 1;
+}
+
+// ---------- общие ----------
+.label {
+  @include type-label;
+  transition: color 0.6s;
+}
+.h2 {
+  @include type-h2;
+}
+.lead {
+  @include type-lead;
+}
+.body {
+  @include type-body;
+}
+.btn {
+  @include btn;
+}
+.ghost {
+  @include btn-ghost;
+}
+.arrow {
+  width: u(18);
+  height: u(18);
+  transition: transform 0.4s var(--ease);
+  .btn:hover & {
+    transform: translateX(u(3));
+  }
+}
+
+// место под светильник внутри текстового блока — только на МВ (см. Lamp.tsx)
+.slot {
+  display: none;
+}
+
+// ---------- шапка ----------
+.header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 10;
+  transition: background-color 0.5s, backdrop-filter 0.5s;
+  &[data-scrolled] {
+    background: linear-gradient(180deg, rgba(7, 6, 11, 0.85), rgba(7, 6, 11, 0));
+  }
+}
+.headerInner {
+  @include container;
+  display: flex;
+  align-items: center;
+  gap: u(12);
+  height: u(84);
+}
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: u(10);
+  @include display;
+  font-size: u(28);
+  letter-spacing: u(-0.4);
+  svg {
+    width: u(34);
+    height: u(34);
+    color: var(--tone);
+    overflow: visible;
+    filter: drop-shadow(0 0 u(10) var(--tone-glow));
+    transition: transform 0.8s var(--ease);
+  }
+  @media (hover: hover) {
+    &:hover svg {
+      transform: rotate(-14deg);
+    }
+  }
+}
+.nav {
+  display: flex;
+  gap: u(36);
+  margin-inline: auto;
+  font-size: u(14);
+  color: var(--text-2);
+  a {
+    transition: color 0.3s;
+    &:hover {
+      color: var(--text-1);
+    }
+  }
+}
+// приближение светильника — плашка внизу слева
+.zoom {
+  position: fixed;
+  left: u(80);
+  bottom: u(28);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: u(4);
+  padding: u(4);
+  @include glass(100);
+  span {
+    min-width: u(52);
+    text-align: center;
+    font-size: u(13);
+    font-variant-numeric: tabular-nums;
+    color: var(--text-2);
+  }
+  button {
+    display: grid;
+    place-items: center;
+    width: u(36);
+    height: u(36);
+    border-radius: 50%;
+    color: var(--text-1);
+    transition: background-color 0.3s, opacity 0.3s;
+    svg {
+      width: u(18);
+      height: u(18);
+    }
+    @media (hover: hover) {
+      &:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+    &:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    &:focus-visible {
+      outline: u(2) solid var(--tone);
+      outline-offset: u(1);
+    }
+  }
+}
+// кнопка питания — круглая, только значок; горит цветом света, погашенная — серая
+.power {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: u(44);
+  height: u(44);
+  border-radius: 50%;
+  border: u(1) solid var(--tone);
+  color: var(--tone);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 0 u(18) var(--tone-glow), inset 0 0 u(10) var(--tone-glow);
+  transition: color 0.4s, border-color 0.4s, box-shadow 0.4s, transform 0.3s var(--ease);
+  svg {
+    width: u(20);
+    height: u(20);
+  }
+  @media (hover: hover) {
+    &:hover {
+      transform: scale(1.06);
+    }
+  }
+  &:active {
+    transform: scale(0.94);
+  }
+  &[aria-pressed="false"] {
+    color: var(--text-3);
+    border-color: var(--line-2);
+    box-shadow: none;
+  }
+  &:focus-visible {
+    outline: u(2) solid var(--tone);
+    outline-offset: u(3);
+  }
+}
+.headerCta {
+  @include btn-ghost(44);
+  font-size: u(14);
+  padding-inline: u(20);
+  span {
+    color: var(--tone);
+    font-weight: 600;
+  }
+}
+
+// ---------- 01 · первый экран ----------
+// Композиция по центру: заголовок сверху, светильник — доминанта, описание и кнопка снизу.
+.hero {
+  @include container;
+  position: relative;
+  height: 100svh;
+  min-height: u(760);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: u(118) u(84);
+  text-align: center;
+}
+.h1 {
+  @include type-h1;
+  font-size: u(92);
+  letter-spacing: u(-2.6);
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(u(-16));
+  transition: opacity 1.4s var(--ease) 0.9s, filter 1.4s var(--ease) 0.9s, transform 1.6s var(--ease) 0.9s;
+  :global(html[data-lit]) & {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+.heroBottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: u(22);
+  opacity: 0;
+  transform: translateY(u(20));
+  transition: opacity 1.2s var(--ease) 1.3s, transform 1.2s var(--ease) 1.3s;
+  :global(html[data-lit]) & {
+    opacity: 1;
+    transform: none;
+  }
+}
+.heroLead {
+  @include type-lead;
+  max-width: u(520);
+}
+
+// ---------- 02 · идея ----------
+.statement {
+  @include container;
+  min-height: 110svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: u(160);
+}
+.glowText {
+  max-width: u(700);
+  margin-top: u(32);
+  @include display;
+  font-size: u(48);
+  line-height: 1.12;
+  letter-spacing: u(-1);
+  span {
+    opacity: var(--lit, 0.16);
+    transition: opacity 0.25s linear;
+  }
+}
+.facts {
+  display: flex;
+  gap: u(64);
+  margin-top: u(72);
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: u(8);
+    padding-top: u(20);
+    border-top: u(1) solid var(--line-2);
+    min-width: u(160);
+  }
+  b {
+    @include display;
+    font-size: u(48);
+    line-height: 1;
+    color: var(--tone);
+    transition: color 0.6s;
+  }
+  span {
+    @include type-body;
+  }
+}
+
+// ---------- 03 · режимы (липкая сцена, 5 шагов) ----------
+// В центре — светильник и название режима, справа — шкала-переключатель.
+// clip не создаёт прокручиваемый контейнер — липкая сцена продолжает работать
+.modes {
+  overflow-x: clip;
+}
+.modesTrack {
+  position: relative;
+  height: calc(var(--n) * 100svh);
+}
+.modesSticky {
+  @include container;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-block: u(100) u(44);
+}
+.modesSteps {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  > div {
+    flex: 1;
+  }
+}
+.modesLabel {
+  @include type-label;
+}
+// название — слева от светильника, описание — справа, оба по центру высоты
+.modesRow {
+  flex: 1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: u(540) 1fr u(380);
+  align-items: center;
+}
+.modesNames {
+  position: relative;
+  grid-column: 1;
+  height: u(100);
+}
+.modeName {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: u(14);
+  b {
+    @include display;
+    font-style: italic;
+    font-size: u(116);
+    line-height: 0.85;
+    letter-spacing: u(-4);
+    color: var(--tone);
+    text-shadow: 0 0 u(60) var(--tone-glow);
+    padding-inline: 0.12em;
+  }
+  // уходящий режим уезжает вверх, следующий ждёт снизу
+  opacity: 0;
+  transform: translateY(u(50));
+  filter: blur(10px);
+  transition: opacity 0.7s var(--ease), transform 0.9s var(--ease), filter 0.7s var(--ease);
+  &[data-past] {
+    transform: translateY(u(-50));
+  }
+  &[data-on] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+.modeIdx {
+  @include type-label;
+  color: var(--text-2);
+}
+.modeTexts {
+  grid-column: 3;
+  display: grid;
+}
+.modeText {
+  grid-area: 1 / 1;
+  @include type-lead;
+  font-size: u(21);
+  color: var(--text-1);
+  opacity: 0;
+  transform: translateY(u(12));
+  transition: opacity 0.6s var(--ease), transform 0.7s var(--ease);
+  &[data-on] {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0.15s;
+  }
+}
+
+// шкала режимов справа: градиент всех цветов + бегунок, который светится цветом режима
+.dial {
+  position: relative;
+  display: flex;
+  width: u(720);
+  padding-top: u(24);
+  li {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: u(5);
+    @include display;
+    font-size: u(22);
+    line-height: 1;
+    color: var(--text-3);
+    transform-origin: center top;
+    transition: color 0.5s, transform 0.6s var(--ease), text-shadow 0.5s;
+    small {
+      font-family: var(--font-sans), sans-serif;
+      font-size: u(10);
+      letter-spacing: 0.16em;
+      color: var(--text-3);
+    }
+    @media (hover: hover) {
+      &:hover {
+        color: var(--text-1);
+      }
+    }
+    &:focus-visible {
+      outline: u(2) solid var(--tone);
+      outline-offset: u(4);
+    }
+  }
+  li[data-on] button {
+    color: var(--c);
+    font-style: italic;
+    transform: scale(1.2);
+    text-shadow: 0 0 u(24) var(--c);
+    small {
+      color: var(--text-2);
+    }
+  }
+}
+// полоса проходит через центры пунктов: по 10% поля с краёв (5 пунктов)
+.dialRail {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 0;
+  height: u(2);
+  border-radius: u(2);
+  background: var(--rail-h);
+  i {
+    position: absolute;
+    top: 50%;
+    left: calc(100% * var(--k) / (var(--n) - 1));
+    width: u(14);
+    height: u(14);
+    border-radius: 50%;
+    background: var(--tone);
+    border: u(3) solid var(--bg);
+    box-shadow: 0 0 0 u(1) var(--tone), 0 0 u(22) var(--tone);
+    translate: -50% -50%;
+    transition: left 0.8s var(--ease);
+  }
+}
+
+// ---------- 04 · детали ----------
+.details {
+  @include container;
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: u(440) 1fr;
+  align-content: center;
+  padding-block: u(120);
+}
+.detailsHead {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: u(18);
+  .h2 {
+    font-size: u(64);
+  }
+}
+.callouts {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: relative;
+  height: u(640);
+}
+.callout {
+  position: absolute;
+  width: u(300);
+  @include glass(24);
+  padding: u(24) u(26);
+  b {
+    @include type-h3;
+    display: block;
+    margin-top: u(10);
+  }
+  p {
+    @include type-body;
+    margin-top: u(10);
+  }
+  // тонкая линия к светильнику
+  &::after {
+    content: "";
+    position: absolute;
+    top: u(40);
+    width: u(120);
+    height: u(1);
+    background: linear-gradient(90deg, var(--tone), transparent);
+    opacity: 0.7;
+  }
+  &[data-k="0"] {
+    left: 0;
+    bottom: 0;
+    &::after { left: 100%; }
+  }
+  &[data-k="1"] {
+    right: 0;
+    bottom: u(60);
+    &::after { right: 100%; transform: scaleX(-1); }
+  }
+}
+.calloutN {
+  @include type-label;
+}
+
+// ---------- 05 · управление ----------
+.control {
+  @include container;
+  min-height: 115svh;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-block: u(150);
+}
+.controlCol {
+  width: u(520);
+  .h2 {
+    margin-top: u(18);
+  }
+}
+.steps {
+  margin-top: u(48);
+  li {
+    display: grid;
+    grid-template-columns: u(56) 1fr;
+    column-gap: u(8);
+    padding-block: u(24);
+    border-top: u(1) solid var(--line);
+  }
+  span {
+    grid-row: span 2;
+    @include display;
+    font-size: u(22);
+    color: var(--tone);
+    transition: color 0.6s;
+  }
+  b {
+    @include type-h3;
+    font-size: u(28);
+  }
+  p {
+    @include type-body;
+    margin-top: u(8);
+  }
+}
+
+// ---------- 06 · отделка ----------
+// Светильник слева, справа — выбор металла: крупные образцы-«шарики» и галочка
+.finish {
+  @include container;
+  min-height: 110svh;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-block: u(140);
+}
+.finishCol {
+  width: u(500);
+}
+.finishLead {
+  @include type-lead;
+  margin-top: u(18);
+}
+.swatches {
+  display: flex;
+  flex-direction: column;
+  gap: u(10);
+  margin-top: u(36);
+}
+.swatch {
+  display: grid;
+  grid-template-columns: u(64) minmax(0, 1fr) u(26);
+  align-items: center;
+  gap: u(20);
+  width: 100%;
+  padding: u(16) u(22) u(16) u(16);
+  text-align: left;
+  border-radius: u(26);
+  border: u(1) solid var(--line);
+  background: rgba(255, 255, 255, 0.025);
+  transition: border-color 0.4s, background-color 0.4s, transform 0.5s var(--ease);
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--line-2);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateX(u(-4));
+    }
+  }
+  &[aria-checked="true"] {
+    border-color: var(--tone);
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 0 u(40) var(--tone-glow);
+  }
+  &:focus-visible {
+    outline: u(2) solid var(--tone);
+    outline-offset: u(3);
+  }
+}
+// образец металла: шарик с бликом и отражением, цвет из --c
+.metal {
+  width: u(64);
+  height: u(64);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.9) 0, rgba(255, 255, 255, 0) 28%),
+    radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.25) 0, rgba(255, 255, 255, 0) 30%),
+    conic-gradient(from 210deg, color-mix(in srgb, var(--c) 45%, #000), var(--c), color-mix(in srgb, var(--c) 70%, #fff), var(--c), color-mix(in srgb, var(--c) 40%, #000));
+  box-shadow:
+    inset 0 0 0 u(1) rgba(255, 255, 255, 0.25),
+    0 u(10) u(24) rgba(0, 0, 0, 0.45);
+  transition: transform 0.6s var(--ease);
+  .swatch:hover &,
+  .swatch[aria-checked="true"] & {
+    transform: rotate(-25deg) scale(1.05);
+  }
+}
+.swatchText {
+  display: flex;
+  flex-direction: column;
+  gap: u(4);
+  b {
+    @include type-h3;
+    font-size: u(30);
+  }
+  small {
+    font-size: u(14);
+    color: var(--text-2);
+  }
+}
+// круглая отметка выбора
+.check {
+  position: relative;
+  width: u(24);
+  height: u(24);
+  border-radius: 50%;
+  border: u(1) solid var(--line-2);
+  transition: border-color 0.3s;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: u(5);
+    border-radius: 50%;
+    background: var(--tone);
+    box-shadow: 0 0 u(10) var(--tone);
+    transform: scale(0);
+    transition: transform 0.4s var(--ease);
+  }
+  .swatch[aria-checked="true"] & {
+    border-color: var(--tone);
+    &::after {
+      transform: scale(1);
+    }
+  }
+}
+.finishCta {
+  margin-top: u(28);
+}
+
+// ---------- 07 · характеристики ----------
+.specs {
+  @include container;
+  min-height: 110svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: u(150);
+}
+.specsHead {
+  display: flex;
+  flex-direction: column;
+  gap: u(18);
+}
+.specGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: u(860);
+  margin-top: u(56);
+  > div {
+    padding: u(26) u(20) u(30) 0;
+    border-top: u(1) solid var(--line-2);
+  }
+  dt {
+    @include display;
+    font-size: u(40);
+    line-height: 1;
+    letter-spacing: u(-0.8);
+    white-space: nowrap;
+    small {
+      font-family: var(--font-sans), sans-serif;
+      font-size: u(14);
+      letter-spacing: 0;
+      margin-left: u(6);
+      color: var(--tone);
+      transition: color 0.6s;
+    }
+  }
+  dd {
+    @include type-body;
+    margin-top: u(12);
+  }
+}
+
+// ---------- 08 · предзаказ ----------
+.order {
+  @include container;
+  min-height: 115svh;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-block: u(140);
+}
+.orderCard {
+  width: u(560);
+  @include glass(32);
+  background: linear-gradient(160deg, rgba(30, 24, 28, 0.72), rgba(12, 10, 16, 0.82));
+  padding: u(44);
+}
+.orderTitle {
+  @include type-h2;
+  font-size: u(52);
+  margin-block: u(16) u(14);
+}
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: u(6) u(16);
+  margin-top: u(28);
+  b {
+    @include display;
+    font-size: u(56);
+    line-height: 1;
+    color: var(--tone);
+    transition: color 0.6s;
+  }
+  s {
+    font-size: u(18);
+    color: var(--text-3);
+  }
+  span {
+    flex-basis: 100%;
+    font-size: u(13);
+    color: var(--text-2);
+  }
+}
+.perks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: u(8);
+  margin-top: u(22);
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: u(8);
+    height: u(34);
+    padding-inline: u(12) u(14);
+    border-radius: u(100);
+    border: u(1) solid var(--line);
+    font-size: u(13);
+  }
+  svg {
+    width: u(14);
+    height: u(14);
+    color: var(--tone);
+  }
+}
+.form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: u(10);
+  margin-top: u(30);
+  .btn {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+// поле с плавающей подписью; нативный вид не используем
+.field {
+  position: relative;
+  display: block;
+  input {
+    width: 100%;
+    height: u(58);
+    padding: u(22) u(18) u(6);
+    border-radius: u(16);
+    border: u(1) solid var(--line-2);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: u(15);
+    outline: none;
+    transition: border-color 0.3s, background-color 0.3s;
+    &:focus {
+      border-color: var(--tone);
+      background: rgba(255, 255, 255, 0.06);
+    }
+  }
+  span {
+    position: absolute;
+    left: u(18);
+    top: u(19);
+    font-size: u(15);
+    color: var(--text-3);
+    pointer-events: none;
+    transform-origin: left top;
+    transition: transform 0.3s var(--ease), color 0.3s;
+  }
+  input:focus + span,
+  input:not(:placeholder-shown) + span {
+    transform: translateY(u(-10)) scale(0.75);
+    color: var(--text-2);
+  }
+  &[data-err] input {
+    border-color: #ff6b5a;
+  }
+}
+.formNote {
+  grid-column: 1 / -1;
+  font-size: u(12);
+  line-height: 1.5;
+  color: var(--text-3);
+  .field[data-err] ~ & {
+    color: #ff8a7a;
+  }
+}
+.done {
+  margin-top: u(30);
+  padding: u(22) u(24);
+  border-radius: u(20);
+  border: u(1) solid var(--tone);
+  background: rgba(255, 255, 255, 0.04);
+  animation: pop 0.6s var(--ease);
+  b {
+    @include type-h3;
+    font-size: u(26);
+  }
+  p {
+    @include type-body;
+    margin-top: u(6);
+  }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.96); }
+}
+
+// ---------- 09 · вопросы ----------
+.faq {
+  @include container;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: u(400) u(560);
+  column-gap: u(80);
+  align-content: center;
+  align-items: start;
+  padding-block: u(140);
+}
+.faqHead {
+  display: flex;
+  flex-direction: column;
+  gap: u(18);
+}
+.faqList {
+  li {
+    border-top: u(1) solid var(--line-2);
+    &:last-child {
+      border-bottom: u(1) solid var(--line-2);
+    }
+  }
+  button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: u(20);
+    width: 100%;
+    padding-block: u(24);
+    text-align: left;
+    @include type-h3;
+    font-size: u(26);
+    &:focus-visible {
+      outline: u(2) solid var(--tone);
+      outline-offset: u(2);
+    }
+  }
+  i {
+    position: relative;
+    flex: none;
+    width: u(14);
+    height: u(14);
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: u(1.5);
+      background: var(--tone);
+      transition: transform 0.4s var(--ease);
+    }
+    &::after {
+      transform: rotate(90deg);
+    }
+  }
+  li[data-open] i::after {
+    transform: rotate(0);
+  }
+}
+.faqA {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s var(--ease);
+  p {
+    overflow: hidden;
+    @include type-body;
+    padding-right: u(40);
+  }
+  li[data-open] & {
+    grid-template-rows: 1fr;
+    p {
+      padding-bottom: u(24);
+    }
+  }
+}
+
+// ---------- подвал ----------
+.footer {
+  @include container;
+  padding-block: u(60) u(36);
+}
+// Слово «Орбита» в подвале — буквы как окно в космос: звёзды на туманности цвета света.
+// Два слоя звёзд: основной медленно плывёт, второй (::after) мерцает поверх.
+@mixin starfield {
+  background:
+    radial-gradient(circle at 20% 30%, #fff 0 u(1.2), transparent u(1.8)) 0 0 / u(31) u(31),
+    radial-gradient(circle at 70% 75%, #fff 0 u(1), transparent u(1.6)) 0 0 / u(47) u(47),
+    radial-gradient(circle at 45% 55%, #ffeacd 0 u(1.8), transparent u(2.6)) 0 0 / u(73) u(73),
+    radial-gradient(circle at 85% 15%, #dfe8ff 0 u(1.4), transparent u(2.2)) 0 0 / u(53) u(53),
+    radial-gradient(55% 90% at 30% 45%, color-mix(in srgb, var(--tone) 60%, transparent), transparent 72%),
+    radial-gradient(45% 80% at 75% 55%, rgba(140, 105, 255, 0.5), transparent 72%),
+    linear-gradient(180deg, #3a2c40, #140f1c);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+// сцена для наклона слова
+.footStage {
+  perspective: u(1200);
+  padding-block: u(20);
+  touch-action: pan-y;
+}
+.footWord {
+  @include display;
+  position: relative;
+  font-style: italic;
+  font-size: u(300);
+  line-height: 0.8;
+  letter-spacing: u(-10);
+  text-align: center;
+  color: transparent;
+  -webkit-text-stroke: u(1) var(--line-2);
+  @include starfield;
+  animation: stardrift 60s linear infinite;
+  padding-right: 0.12em;
+  --mx: 50%;
+  --my: 50%;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.9s var(--ease);
+  user-select: none;
+  // «фонарик»: свет светильника и яркие звёзды там, где курсор/палец
+  &::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    padding-right: inherit;
+    color: transparent;
+    -webkit-text-stroke: 0;
+    // звёзды на разных простых шагах — сетка не читается
+    background:
+      radial-gradient(circle at 31% 42%, #fff 0 u(1.6), transparent u(2.4)) 0 0 / u(23) u(29),
+      radial-gradient(circle at 67% 18%, #fff 0 u(1.1), transparent u(1.8)) 0 0 / u(37) u(31),
+      radial-gradient(circle at 12% 77%, #ffe7c4 0 u(2), transparent u(2.8)) 0 0 / u(53) u(47),
+      radial-gradient(circle at 83% 61%, #dfe8ff 0 u(1.4), transparent u(2.2)) 0 0 / u(71) u(59),
+      radial-gradient(circle u(240) at var(--mx) var(--my), var(--tone) 0%, color-mix(in srgb, var(--tone) 30%, transparent) 50%, transparent 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    // светится только пятно вокруг курсора/пальца
+    -webkit-mask-image: radial-gradient(circle u(230) at var(--mx) var(--my), #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 75%);
+    mask-image: radial-gradient(circle u(230) at var(--mx) var(--my), #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 75%);
+    opacity: 0;
+    transition: opacity 0.6s var(--ease);
+  }
+  &[data-lit]::after {
+    opacity: 1;
+  }
+}
+@keyframes stardrift {
+  to {
+    background-position: u(580) u(-290), u(-415) u(166), u(274) u(137), u(-202) u(-101), 0 0, 0 0, 0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .footWord,
+  .footWord::after {
+    animation: none;
+  }
+}
+.footRow {
+  display: flex;
+  justify-content: space-between;
+  // слева внизу висят кнопки приближения — копирайт начинается правее них
+  padding-left: u(170);
+  margin-top: u(40);
+  padding-top: u(24);
+  border-top: u(1) solid var(--line);
+  font-size: u(13);
+  color: var(--text-3);
+  nav {
+    display: flex;
+    gap: u(28);
+  }
+  a:hover {
+    color: var(--text-1);
+  }
+}
+
+// =================== МВ (≤1023): одна колонка, светильник сверху ===================
+@include mobile {
+  .nav {
+    display: none;
+  }
+  .headerInner {
+    height: u(64);
+  }
+  .logo {
+    font-size: u(24);
+    svg {
+      width: u(30);
+      height: u(30);
+    }
+  }
+  // на телефоне приближают щипком — кнопки не нужны
+  .zoom {
+    display: none;
+  }
+  .power {
+    margin-left: auto;
+    width: u(38);
+    height: u(38);
+    svg {
+      width: u(18);
+      height: u(18);
+    }
+  }
+  .headerCta {
+    height: u(38);
+    padding-inline: u(14);
+    font-size: u(13);
+  }
+
+  // первый экран: заголовок сверху, светильник в центре, описание и кнопка снизу
+  .hero {
+    min-height: u(640);
+    justify-content: center;
+    gap: u(14);
+    padding-block: u(72) u(24);
+  }
+  .slot {
+    display: block;
+    flex: none;
+    width: 100%;
+  }
+  .hero .slot {
+    height: u(290);
+  }
+  .h1 {
+    order: -2;
+    font-size: u(46);
+    letter-spacing: u(-1.2);
+    line-height: 0.95;
+  }
+  .heroBottom {
+    gap: u(18);
+    width: 100%;
+    .btn {
+      width: 100%;
+      height: u(52);
+    }
+  }
+  .heroLead {
+    font-size: u(15);
+  }
+
+  // «Идея»: светильник, под ним заголовок и текст — всё по центру
+  .statement {
+    justify-content: center;
+    min-height: 100svh;
+    padding-block: u(72) u(40);
+    .slot {
+      height: u(250);
+      margin-bottom: u(8);
+    }
+  }
+  // блоки, где светильник уходит за кадр, — содержимое по центру экрана
+  .control,
+  .specs,
+  .order,
+  .faq {
+    min-height: 100svh;
+    padding-block: u(88) u(40);
+  }
+  .glowText {
+    font-size: u(28);
+    line-height: 1.15;
+    letter-spacing: u(-0.4);
+    margin-top: u(16);
+  }
+  .facts {
+    gap: u(12);
+    margin-top: u(32);
+    li {
+      flex: 1;
+      min-width: 0;
+      padding-top: u(12);
+    }
+    b {
+      font-size: u(30);
+    }
+    span {
+      font-size: u(12);
+    }
+  }
+
+  // режимы: заголовок — светильник — название и описание — шкала, одной группой по центру
+  .modesSticky {
+    justify-content: center;
+    padding-block: u(64) u(24);
+    .slot {
+      height: u(300);
+    }
+  }
+  .modesRow {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+  .modesNames {
+    width: 100%;
+  }
+  .modesNames {
+    height: u(100);
+  }
+  .modeName {
+    inset: auto 0 0;
+    align-items: center;
+    gap: u(8);
+    b {
+      font-size: u(78);
+      letter-spacing: u(-2);
+    }
+  }
+  .modeTexts {
+    margin-top: u(10);
+  }
+  .modeText {
+    font-size: u(16);
+  }
+  // шкала — горизонтальная под текстом
+  .dial {
+    width: 100%;
+    margin-top: u(22);
+    padding-top: u(18);
+    button {
+      font-size: u(13);
+      small {
+        font-size: u(8);
+        letter-spacing: 0.1em;
+      }
+    }
+    li[data-on] button {
+      transform: scale(1.08);
+    }
+  }
+
+  .details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+    padding-block: u(72) u(40);
+    .slot {
+      height: u(270);
+      margin-block: u(8);
+    }
+  }
+  .detailsHead {
+    .lead {
+      max-width: none;
+    }
+  }
+  // светильник между заголовком и карточками
+  .callouts {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: u(10);
+  }
+  .callout {
+    position: relative;
+    inset: auto !important;
+    width: 100%;
+    padding: u(18) u(20);
+    &::after {
+      display: none;
+    }
+    b {
+      font-size: u(24);
+    }
+  }
+
+
+  .controlCol {
+    width: 100%;
+  }
+  .steps {
+    margin-top: u(24);
+    li {
+      grid-template-columns: u(40) 1fr;
+      padding-block: u(16);
+    }
+    span {
+      font-size: u(18);
+    }
+    b {
+      font-size: u(22);
+    }
+  }
+
+  // отделка: светильник сверху, под ним заголовок и три образца в ряд
+  // отделка: светильник в верхней трети, остальное — по центру под ним
+  .finish {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+    padding-block: u(72) u(40);
+    .slot {
+      height: u(230);
+      margin-bottom: u(8);
+    }
+  }
+  .finishCol {
+    width: 100%;
+  }
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: u(8);
+    margin-top: u(24);
+  }
+  .swatch {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: u(10);
+    padding: u(16) u(8);
+    text-align: center;
+    border-radius: u(20);
+    @media (hover: hover) {
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+  .metal {
+    width: u(52);
+    height: u(52);
+  }
+  .swatchText {
+    align-items: center;
+    b {
+      font-size: u(20);
+    }
+    small {
+      display: none;
+    }
+  }
+  .check {
+    display: none;
+  }
+  .finishCta {
+    width: 100%;
+    margin-top: u(20);
+  }
+  .specGrid {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: u(28);
+    > div {
+      padding: u(16) u(10) u(18) 0;
+    }
+    dt {
+      font-size: u(30);
+    }
+    dd {
+      font-size: u(12);
+      margin-top: u(6);
+    }
+  }
+
+  .orderCard {
+    width: 100%;
+    padding: u(24) u(20);
+  }
+  .orderTitle {
+    font-size: u(36);
+  }
+  .price b {
+    font-size: u(44);
+  }
+  .form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .faq {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: u(24);
+  }
+  .faqList button {
+    font-size: u(20);
+    padding-block: u(18);
+  }
+  .faqA p {
+    padding-right: 0;
+  }
+
+  .footWord {
+    font-size: u(120);
+    letter-spacing: u(-4);
+  }
+  .footRow {
+    padding-left: 0;
+    flex-direction: column;
+    gap: u(16);
+    nav {
+      flex-wrap: wrap;
+      gap: u(10) u(20);
+    }
+  }
+}
