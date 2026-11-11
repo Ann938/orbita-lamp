@@ -473,8 +473,10 @@ export class LampScene {
         varying vec3 vObj; varying vec3 vN; varying vec3 vV;
         void main(){
           vec3 n = normalize(vN);
-          float facing = max(dot(n, normalize(vV)), 0.);
-          float fres = 1. - facing;
+          // clamp обязателен: на видеокартах Apple dot() единичных векторов бывает чуть больше 1,
+          // fres уходит в минус, pow() даёт NaN, а bloom разносит его по кадру — светильник «моргает»
+          float facing = clamp(dot(n, normalize(vV)), 0., 1.);
+          float fres = clamp(1. - facing, 0., 1.);
           float t = uTime * .1;
           // матовое стекло: мелкое «зерно» пескоструя
           float grain = snoise(vObj * 90.) * .5 + .5;
@@ -648,7 +650,7 @@ export class LampScene {
         void main(){
           vec4 mv = modelViewMatrix * vec4(position, 1.);
           vR = aRnd;
-          vA = .45 + .55 * sin(uTime * (.6 + aRnd * 1.8) + aRnd * 40.);
+          vA = max(0., .45 + .55 * sin(uTime * (.6 + aRnd * 1.8) + aRnd * 40.));
           vec4 clip = projectionMatrix * mv;
           // звёзды расступаются вокруг курсора и вспыхивают
           vec2 ndc = clip.xy / clip.w;
