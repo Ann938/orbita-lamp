@@ -26,18 +26,7 @@ export type LampState = {
   zoom: number; // приближение руками, 1…2.6
   mx: number; // курсор/палец для звёзд, NDC (y вверх)
   my: number;
-  room: number; // 1 — светильник стоит на тумбочке в спальне (первый экран), 0 — космос
-  roomShift: number; // насколько первый экран уехал вверх, доли высоты экрана
 };
-
-// Спальня первого экрана: фото ночной комнаты, светильник ставится на тумбочку.
-// Координаты в долях кадра (сверху вниз): центр верхней плоскости тумбочки и её ширина.
-const ROOM = { src: "/room/bedroom.jpg", w: 1536, h: 864, ax: 0.489, ay: 0.476, aw: 0.158, fx: 0.489, fy: 0.5 };
-// база светильника — такая доля ширины тумбочки
-const ROOM_FIT = 0.47;
-// на телефоне фото не режем «cover» (тумбочка вышла бы на полэкрана): кадр занимает
-// такую долю высоты экрана, края уходят в темноту, тумбочка встаёт под заголовок
-const ROOM_MOBILE = { h: 0.78, fit: 0.56 };
 
 const FINISH: Record<Finish, { metal: string; rough: number; stone: string }> = {
   brass: { metal: "#c8964f", rough: 0.28, stone: "#1f1b19" },
@@ -179,11 +168,7 @@ export class LampScene {
   private uGlobe: Record<string, THREE.IUniform>;
   private uBg: Record<string, THREE.IUniform>;
   private uStars: Record<string, THREE.IUniform>;
-  private cur = { x: 0, y: 0, s: 1, spin: 0, px: 0, py: 0, power: 0, dim: 0, on: 1, zoom: 1, room: 1 };
-  private uStarFade = { value: 0 }; // звёзды в спальне не видны
-  // где на экране тумбочка: NDC центра её верха и ширина в долях экрана
-  private roomAnchor = { x: 0, y: 0, w: 0.2 };
-  private roomTy = 0.5; // МВ: где на экране верх тумбочки, доля высоты снизу
+  private cur = { x: 0, y: 0, s: 1, spin: 0, px: 0, py: 0, power: 0, dim: 0, on: 1, zoom: 1 };
   private uFade = { value: 1 }; // пыль и звёзды внутри ядра гаснут вместе со светом
   private key!: THREE.DirectionalLight; // «комнатный» свет, когда светильник выключен
   private hemi!: THREE.HemisphereLight;
@@ -209,7 +194,7 @@ export class LampScene {
   constructor(canvas: HTMLCanvasElement, opts: { mobile: boolean; onTone?: (c: THREE.Color) => void }) {
     this.mobile = opts.mobile;
     this.onTone = opts.onTone;
-    this.state = { tone: this.tone.clone(), x: 0, y: 0, s: 1, spin: 0, px: 0, py: 0, power: 0, dim: 0, on: 1, zoom: 1, mx: 9, my: 9, room: 1, roomShift: 0 };
+    this.state = { tone: this.tone.clone(), x: 0, y: 0, s: 1, spin: 0, px: 0, py: 0, power: 0, dim: 0, on: 1, zoom: 1, mx: 9, my: 9 };
 
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: "high-performance" });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.mobile ? 1.5 : 1.75));
@@ -252,21 +237,7 @@ export class LampScene {
       uTime: { value: 0 },
       uPower: { value: 0 },
       uMobile: { value: this.mobile ? 1 : 0 },
-      uRoom: { value: 1 },
-      uRoomTex: { value: null },
-      uRoomScale: { value: new THREE.Vector2(1, 1) },
-      uRoomOff: { value: new THREE.Vector2(0, 0) },
-      uRoomShift: { value: 0 },
     };
-    const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-    new THREE.TextureLoader().load(base + ROOM.src, (t) => {
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.minFilter = THREE.LinearFilter;
-      t.generateMipmaps = false;
-      this.uBg.uRoomTex.value = t;
-      this.uBg.uRoomOn.value = 1;
-    });
-    this.uBg.uRoomOn = { value: 0 };
     this.uStars = {
       uTone: { value: this.tone.clone() },
       uTime: { value: 0 },
@@ -305,8 +276,7 @@ export class LampScene {
       vertexShader: `varying vec2 vUv; void main(){ vUv = position.xy*.5+.5; gl_Position = vec4(position.xy, 0., 1.); }`,
       fragmentShader: /* glsl */ `
         ${NOISE}
-        uniform vec3 uTone; uniform vec2 uLamp; uniform float uAspect, uTime, uPower, uMobile, uRoom, uRoomOn;
-        uniform sampler2D uRoomTex; uniform vec2 uRoomScale, uRoomOff; uniform float uRoomShift;
+        uniform vec3 uTone; uniform vec2 uLamp; uniform float uAspect, uTime, uPower, uMobile;
         varying vec2 vUv;
         void main(){
           vec2 d = vUv - uLamp; d.x *= uAspect;
@@ -319,20 +289,6 @@ export class LampScene {
           float n = fbm(vec3(q, uTime * .025));
           float neb = smoothstep(.05, .9, n) * (1. - smoothstep(.0, .7, r)) * .07;
           vec3 c = base + uTone * (halo + neb) * uPower;
-          // спальня: ночная комната, которую освещает только сам светильник
-          if (uRoom > .001) {
-            // комната уезжает вверх вместе с первым экраном
-            vec2 iuv = (vUv - vec2(0., uRoomShift)) * uRoomScale + uRoomOff;
-            vec3 tex = texture2D(uRoomTex, iuv).rgb * uRoomOn * smoothstep(0., .22, iuv.y) * smoothstep(1., .86, iuv.y);
-            // лунный свет из окна — холодный и слабый
-            vec3 moon = tex * vec3(.5, .54, .64);
-            // тёплый свет лампы: широкое пятно на стене и яркое — на тумбочке
-            float lit = exp(-r * 2.4) * 1.5 + exp(-r * 7.) * 2.2;
-            vec3 room = moon + tex * uTone * lit * uPower * 2.4;
-            // низ и верх темнее — там текст
-            room *= mix(.45, 1., smoothstep(.0, .3, vUv.y)) * mix(.7, 1., smoothstep(1., .82, vUv.y));
-            c = mix(c, room, uRoom);
-          }
           // виньетка
           vec2 v = vUv - .5; c *= 1. - dot(v, v) * .9;
           gl_FragColor = vec4(c, 1.);
@@ -728,7 +684,7 @@ export class LampScene {
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     g.setAttribute("aRnd", new THREE.BufferAttribute(rnd, 1));
-    this.stars = new THREE.Points(g, this.pointsMaterial(1.6, this.uStarFade));
+    this.stars = new THREE.Points(g, this.pointsMaterial(1.6));
     this.scene.add(this.stars);
   }
 
@@ -760,12 +716,6 @@ export class LampScene {
     this.roughTarget = FINISH[f].rough;
   }
 
-  // МВ: верх тумбочки ставим в заданную точку экрана (доля высоты сверху)
-  setRoomTop(fromTop: number) {
-    this.roomTy = 1 - fromTop;
-    this.resize();
-  }
-
   // Точка на плоскости z=0 под заданной точкой экрана (NDC)
   private ray = new THREE.Raycaster();
   private plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
@@ -790,23 +740,6 @@ export class LampScene {
     this.camera.updateProjectionMatrix();
     this.uBg.uAspect.value = w / h;
     this.uStars.uAspect.value = w / h;
-    // фото спальни — «cover» с фокусом на тумбочке
-    const ia = ROOM.w / ROOM.h;
-    const sa = w / h;
-    let sx = sa < ia ? sa / ia : 1;
-    let sy = sa < ia ? 1 : ia / sa;
-    let oy = Math.min(Math.max(1 - ROOM.fy - sy / 2, 0), 1 - sy);
-    if (this.mobile) {
-      sy = 1 / ROOM_MOBILE.h;
-      sx = sa / (ROOM_MOBILE.h * ia);
-      oy = 1 - ROOM.ay - this.roomTy * sy;
-    }
-    const ox = Math.min(Math.max(ROOM.fx - sx / 2, 0), 1 - sx);
-    this.uBg.uRoomScale.value.set(sx, sy);
-    this.uBg.uRoomOff.value.set(ox, oy);
-    this.roomAnchor.x = ((ROOM.ax - ox) / sx) * 2 - 1;
-    this.roomAnchor.y = ((1 - ROOM.ay - oy) / sy) * 2 - 1;
-    this.roomAnchor.w = ROOM.aw / sx;
   }
 
   private loop = () => {
@@ -829,10 +762,6 @@ export class LampScene {
     c.dim += (s.dim - c.dim) * k;
     c.zoom += (s.zoom - c.zoom) * (1 - Math.exp(-6 * dt));
     c.on += (s.on - c.on) * (1 - Math.exp(-7 * dt));
-    c.room += (s.room - c.room) * (1 - Math.exp(-6 * dt));
-    this.uBg.uRoom.value = c.room;
-    this.uBg.uRoomShift.value = s.roomShift;
-    this.uStarFade.value = 1 - c.room;
 
     // цвет: мягко догоняем цель, второй тон — сдвиг по оттенку, глубже
     const prev = this.tone.getHex();
@@ -895,34 +824,16 @@ export class LampScene {
     this.core.intensity = 20 * power;
     this.rim.color.copy(this.tone);
     this.rim.intensity = 2.2 * power;
-    // в спальне ореол и bloom тише: светит комната, а не облако вокруг шара
-    this.glow.material.color.copy(this.tone).multiplyScalar(power * (this.mobile ? 0.5 : 1) * (1 - c.room * 0.6));
+    this.glow.material.color.copy(this.tone).multiplyScalar(power * (this.mobile ? 0.5 : 1));
     (this.pool.material as THREE.MeshBasicMaterial).color.copy(this.tone).multiplyScalar(power * 0.7);
     // на телефоне буфер меньше и ореол «расползается» — свечение слабее
-    this.bloom.strength = (this.mobile ? 0.38 : 0.7) * (0.4 + power * 0.6) * (1 - c.room * 0.45);
+    this.bloom.strength = (this.mobile ? 0.38 : 0.7) * (0.4 + power * 0.6);
 
     // положение на экране и масштаб
     const fit = this.mobile ? 0.82 : 1;
     const p = this.toWorld(c.x, c.y);
-    let lx = p.x;
-    let ly = p.y - 0.42 * c.s * fit * c.zoom;
-    let ls = c.s * fit * c.zoom;
-    // в спальне светильник стоит основанием на тумбочке и по размеру подходит к ней
-    if (c.room > 0.001) {
-      const ra = this.roomAnchor;
-      const wl = this.toWorld(-1, 0).x;
-      const wr = this.toWorld(1, 0).x;
-      const sRoom = ((ra.w * (wr - wl)) / 2) * (this.mobile ? ROOM_MOBILE.fit : ROOM_FIT) / 0.98 * c.zoom;
-      const a = this.toWorld(ra.x, ra.y + s.roomShift * 2);
-      const t = c.room;
-      lx += (a.x - lx) * t;
-      ly += (a.y + 1.78 * sRoom - ly) * t;
-      ls += (sRoom - ls) * t;
-    }
-    this.lamp.position.set(lx, ly, 0);
-    this.lamp.scale.setScalar(ls);
-    // световое пятно на тумбочке не шире её крышки
-    this.pool.scale.setScalar(1 - c.room * 0.55);
+    this.lamp.position.set(p.x, p.y - 0.42 * c.s * fit * c.zoom, 0);
+    this.lamp.scale.setScalar(c.s * fit * c.zoom);
 
     // вращение: прокрутка + лёгкий дрейф + курсор
     // инерция после броска; наклон мягко возвращается к норме

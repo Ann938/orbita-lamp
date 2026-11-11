@@ -17,7 +17,3 @@
   МВ: `ENGINE=webkit MOBILE=1 node scripts/shot.mjs http://localhost:3300/ <out> 390 844 dark 700`.
 - Публикация (только с согласия): коммит → `git push` → `npm run deploy` → https://ann938.github.io/orbita-lamp/ (репо Ann938/orbita-lamp, noindex).
 - В шапке — кнопка питания (`PowerButton`).
-- Первый экран — спальня: `public/room/bedroom.jpg` (сгенерировано в Figma, файл «Орбита — спальня»), рисуется фоновым шейдером
-  (`ROOM` в LampScene.ts: координаты тумбочки в кадре). Поза `room: 1` у hero; светильник стоит на тумбочке, комнату освещает его свет
-  (`uPower`), выключен — лунный полумрак. При прокрутке комната уезжает вверх (`roomShift`) и растворяется в космосе.
-  МВ: кадр не «cover», а `ROOM_MOBILE.h` высоты экрана, верх тумбочки — у низа слота hero (`setRoomTop`).
