@@ -75,7 +75,8 @@ export default function Lamp() {
       // ---- точки сценария ----
       let stops: Stop[] = [];
       const measure = () => {
-        const vh = window.innerHeight;
+        // высота холста (100lvh) — та же, что у сцены; не скачет вместе с адресной строкой
+        const vh = canvas.current?.clientHeight || window.innerHeight;
         stops = [...document.querySelectorAll<HTMLElement>("[data-stop]")]
           .map((el) => {
             const r = el.getBoundingClientRect();
@@ -121,8 +122,17 @@ export default function Lamp() {
       // цвет на старте берём сразу, без перелива из оранжевого
       onTone(st.tone.clone().convertLinearToSRGB());
 
-      const onScroll = () => apply();
+      // время последней прокрутки: касание, которым останавливают инерцию, — не нажатие
+      let scrolledAt = 0;
+      const onScroll = () => {
+        scrolledAt = performance.now();
+        apply();
+      };
+      let lastW = window.innerWidth;
       const onResize = () => {
+        // телефон: при прокрутке меняется только высота (адресная строка) — сцену не трогаем
+        if (mobile && window.innerWidth === lastW) return;
+        lastW = window.innerWidth;
         scene?.resize();
         measure();
         apply();
@@ -305,7 +315,7 @@ export default function Lamp() {
         if (e.touches.length < 2) pinch = null;
         if (touch?.mode === "turn") sc.release();
         // короткое касание кнопки или ядра — включить/выключить
-        else if (touch && !touch.mode && e.type === "touchend" && (onButton(touch.x, touch.y, true) || onCore(touch.x, touch.y))) {
+        else if (touch && !touch.mode && e.type === "touchend" && performance.now() - scrolledAt > 350 && (onButton(touch.x, touch.y, true) || onCore(touch.x, touch.y))) {
           e.preventDefault(); // без «призрачного» клика после касания
           if (onButton(touch.x, touch.y, true)) press();
           else toggle();

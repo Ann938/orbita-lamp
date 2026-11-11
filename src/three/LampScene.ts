@@ -727,9 +727,18 @@ export class LampScene {
     return this.hit;
   }
 
+  // Размер холста берём у самого холста (CSS: 100lvh), а не у окна: в Safari на телефоне
+  // при прокрутке адресная строка прячется и window.innerHeight скачет. Если пересоздавать
+  // буфер на каждый такой скачок, холст на кадр очищается и светильник «моргает».
+  private W = 1;
+  private H = 1;
   resize() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const cv = this.renderer.domElement;
+    const w = cv.clientWidth || window.innerWidth;
+    const h = cv.clientHeight || window.innerHeight;
+    if (w === this.W && h === this.H) return;
+    this.W = w;
+    this.H = h;
     this.renderer.setSize(w, h, false);
     this.composer.setSize(w, h);
     this.composer.setPixelRatio(this.renderer.getPixelRatio());
@@ -803,8 +812,8 @@ export class LampScene {
     this.uStars.uTime.value = time;
     {
       const m = this.mouse;
-      const W = window.innerWidth;
-      const H = window.innerHeight;
+      const W = this.W;
+      const H = this.H;
       const away = s.mx > 5;
       if (!away) {
         const km = 1 - Math.exp(-3 * dt);
@@ -859,8 +868,8 @@ export class LampScene {
     const v = new THREE.Vector3(0, 0.42, 0).applyMatrix4(this.lamp.matrixWorld);
     v.project(this.camera);
     this.uBg.uLamp.value.set(v.x * 0.5 + 0.5, v.y * 0.5 + 0.5);
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const w = this.W;
+    const h = this.H;
     this.bounds.x = (v.x * 0.5 + 0.5) * w;
     this.bounds.y = (0.5 - v.y * 0.5) * h;
     // радиус кольца в пикселях: ~1.7 единицы сцены × масштаб
