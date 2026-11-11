@@ -12,10 +12,10 @@ import s from "./Lamp.module.scss";
 // Между соседними точками поза и цвет света плавно смешиваются по прокрутке,
 // поворот растёт вместе с прокруткой всей страницы.
 
-type Pose = { x: number; y: number; s: number; dim?: number };
+type Pose = { x: number; y: number; s: number; dim?: number; room?: number };
 
 const DESKTOP: Record<string, Pose> = {
-  hero: { x: 0, y: 0.2, s: 0.66 },
+  hero: { x: 0, y: 0.2, s: 0.66, room: 1 },
   statement: { x: 0.44, y: 0.02, s: 0.9, dim: 0.1 },
   modes: { x: 0, y: 0.1, s: 0.8 },
   details: { x: 0.04, y: -0.04, s: 1 },
@@ -28,7 +28,7 @@ const DESKTOP: Record<string, Pose> = {
 // На телефоне светильник по центру в верхней части экрана; в длинных текстовых блоках
 // он уходит вверх за кадр, чтобы не светить сквозь текст (цвет фона остаётся)
 const MOBILE: Record<string, Pose> = {
-  hero: { x: 0, y: 0.12, s: 0.8 },
+  hero: { x: 0, y: 0.12, s: 0.8, room: 1 },
   statement: { x: 0, y: 0.42, s: 0.74, dim: 0.15 },
   modes: { x: 0, y: 0.3, s: 0.84 },
   details: { x: 0, y: 0.36, s: 0.82 },
@@ -95,6 +95,8 @@ export default function Lamp() {
               const top = sticky ? sr.top - sticky.getBoundingClientRect().top : sr.top + window.scrollY - at;
               const cy = top + sr.height * 0.36;
               pose = { ...pose, y: 1 - (2 * cy) / vh };
+              // спальня: светильник стоит на тумбочке, верх тумбочки — у низа места под него
+              if (pose.room) scene?.setRoomTop((top + sr.height * 0.97) / vh);
             }
             return { at, pose, tone: el.dataset.tone || "#ffa04d" };
           })
@@ -114,6 +116,11 @@ export default function Lamp() {
         st.y = a.pose.y + (b.pose.y - a.pose.y) * t;
         st.s = a.pose.s + (b.pose.s - a.pose.s) * t;
         st.dim = (a.pose.dim ?? 0) + ((b.pose.dim ?? 0) - (a.pose.dim ?? 0)) * t;
+        // спальня растворяется в космосе быстрее, чем светильник доезжает до следующей позы
+        const tr = Math.min(1, t * 2.2);
+        st.room = (a.pose.room ?? 0) + ((b.pose.room ?? 0) - (a.pose.room ?? 0)) * tr;
+        // спальня — часть первого экрана: уезжает вверх вместе с ним
+        st.roomShift = y / window.innerHeight;
         st.tone.set(a.tone).lerp(tmp.set(b.tone), t);
         const max = document.documentElement.scrollHeight - window.innerHeight;
         st.spin = reduced ? 0 : (y / Math.max(max, 1)) * Math.PI * 4;
