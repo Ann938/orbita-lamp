@@ -511,47 +511,6 @@
   @include type-label;
 }
 
-// ---------- 05 · управление ----------
-.control {
-  @include container;
-  min-height: 115svh;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding-block: u(150);
-}
-.controlCol {
-  width: u(520);
-  .h2 {
-    margin-top: u(18);
-  }
-}
-.steps {
-  margin-top: u(48);
-  li {
-    display: grid;
-    grid-template-columns: u(56) 1fr;
-    column-gap: u(8);
-    padding-block: u(24);
-    border-top: u(1) solid var(--line);
-  }
-  span {
-    grid-row: span 2;
-    @include display;
-    font-size: u(22);
-    color: var(--tone);
-    transition: color 0.6s;
-  }
-  b {
-    @include type-h3;
-    font-size: u(28);
-  }
-  p {
-    @include type-body;
-    margin-top: u(8);
-  }
-}
-
 // ---------- 06 · отделка ----------
 // Светильник слева, справа — выбор металла: крупные образцы-«шарики» и галочка
 .finish {
@@ -1030,7 +989,6 @@
     }
   }
   // блоки, где светильник уходит за кадр, — содержимое по центру экрана
-  .control,
   .specs,
   .order,
   .faq {
@@ -1147,23 +1105,6 @@
     }
   }
 
-
-  .controlCol {
-    width: 100%;
-  }
-  .steps {
-    margin-top: u(24);
-    li {
-      grid-template-columns: u(40) 1fr;
-      padding-block: u(16);
-    }
-    span {
-      font-size: u(18);
-    }
-    b {
-      font-size: u(22);
-    }
-  }
 
   // отделка: светильник сверху, под ним заголовок и три образца в ряд
   // отделка: светильник в верхней трети, остальное — по центру под ним

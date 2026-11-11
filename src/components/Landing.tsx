@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { control, details, faq, finish, footer, hero, modes, nav, order, price, specs, statement } from "@/content";
+import { details, faq, finish, footer, hero, modes, nav, order, price, specs, statement } from "@/content";
 import s from "./landing.module.scss";
 
 // Лендинг «Орбита». Светильник живёт на фиксированном холсте (Lamp.tsx),
@@ -414,24 +414,6 @@ export default function Landing() {
               </li>
             ))}
           </ul>
-        </section>
-
-        {/* 05 · Управление */}
-        <section className={s.control} data-stop data-pose="control" data-tone="#6f86ff">
-          <div className={s.controlCol}>
-            <h2 className={s.h2} data-reveal style={d(1)}>
-              {control.title}
-            </h2>
-            <ol className={s.steps}>
-              {control.items.map((it, i) => (
-                <li key={it.k} data-reveal style={d(i + 1)}>
-                  <span>{String(i + 1).padStart(2, "0")}</span>
-                  <b>{it.k}</b>
-                  <p>{it.v}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
         </section>
 
         {/* 06 · Отделка: меняет металл модели */}

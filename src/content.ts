@@ -58,16 +58,6 @@ export const details = {
   ],
 };
 
-export const control = {
-  label: "Управление",
-  title: "Жест вместо выключателя",
-  items: [
-    { k: "Поверните кольцо", v: "Яркость плавно меняется от едва заметного ночника до полного света." },
-    { k: "Нажмите кнопку на основании", v: "Свет плавно загорается и гаснет. Двойное нажатие переключает режимы: Янтарь, Луна, Аврора, Туманность, Марс." },
-    { k: "Или из приложения", v: "Свои цвета, расписание и сценарий «Рассвет»: утром светильник разгорается за 20 минут до будильника." },
-  ],
-};
-
 export const finish = {
   label: "Отделка",
   title: "Выберите свой металл",
@@ -139,4 +129,4 @@ const fix = (o: Deep): Deep => {
   }
   return o;
 };
-[site, price, hero, statement, modes, details, control, finish, specs, order, faq, footer].forEach((x) => fix(x as unknown as Deep));
+[site, price, hero, statement, modes, details, finish, specs, order, faq, footer].forEach((x) => fix(x as unknown as Deep));
