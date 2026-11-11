@@ -149,6 +149,7 @@ export class LampScene {
   private clock = new THREE.Clock();
   private raf = 0;
   private mobile: boolean;
+  private dbg = "";
 
   private lamp = new THREE.Group(); // позиция и масштаб на экране
   private body = new THREE.Group(); // вращение
@@ -201,7 +202,11 @@ export class LampScene {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
     // тени от стойки, дуги и кольца на основании — свет идёт изнутри ядра
-    this.renderer.shadowMap.enabled = true;
+    // Диагностика мигания на телефонах: ?t=a — без теней, b — без bloom, c — туманность стоит,
+    // d — без стекла и колбы, e — 8-битный буфер вместо half float. Убрать после поиска причины.
+    const dbg = typeof location !== "undefined" ? new URLSearchParams(location.search).get("t") || "" : "";
+    this.dbg = dbg;
+    this.renderer.shadowMap.enabled = !dbg.includes("a");
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
@@ -254,11 +259,11 @@ export class LampScene {
 
     const size = new THREE.Vector2();
     this.renderer.getDrawingBufferSize(size);
-    const rt = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: this.mobile ? 0 : 4 });
+    const rt = new THREE.WebGLRenderTarget(1, 1, { type: dbg.includes("e") ? THREE.UnsignedByteType : THREE.HalfFloatType, samples: this.mobile ? 0 : 4 });
     this.composer = new EffectComposer(this.renderer, rt);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
     this.bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.7, 0.35, 0.7);
-    this.composer.addPass(this.bloom);
+    if (!this.dbg.includes("b")) this.composer.addPass(this.bloom);
     this.composer.addPass(new OutputPass());
 
     this.resize();
@@ -407,6 +412,7 @@ export class LampScene {
     );
     bulb.position.y = bulbY + 0.2;
     bulb.renderOrder = 1;
+    bulb.visible = !this.dbg.includes("d");
     this.body.add(bulb);
     // стеклянная ножка и держатели нитей
     const wireMat = new THREE.MeshStandardMaterial({ color: "#b9b2a8", metalness: 0.9, roughness: 0.3 });
@@ -548,6 +554,7 @@ export class LampScene {
     );
     glass.position.y = GLOBE_Y;
     glass.renderOrder = 2;
+    glass.visible = !this.dbg.includes("d");
     this.body.add(glass);
 
     // свет ядра: окрашивает металл и камень
@@ -805,7 +812,7 @@ export class LampScene {
     this.hemi.intensity = 0.5 * (1 - on);
     this.uGlobe.uTone.value.copy(this.tone);
     this.uGlobe.uTone2.value.copy(this.tone2);
-    this.uGlobe.uTime.value = time;
+    this.uGlobe.uTime.value = this.dbg.includes("c") ? 3 : time;
     this.uGlobe.uPower.value = (1 - c.dim * 0.65) * 0.95;
     this.uBg.uTone.value.copy(this.tone);
     this.uBg.uTime.value = time;
